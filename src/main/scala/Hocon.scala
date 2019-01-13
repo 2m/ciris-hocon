@@ -16,40 +16,38 @@
 
 package lt.dvim.ciris
 
-import ciris._
-import ciris.api.Id
-import com.typesafe.config.{Config, ConfigException, ConfigFactory}
+import ciris.{ConfigValue => _, _}
+import ciris.api.{Id, Monad}
+import com.typesafe.config.{Config, ConfigException, ConfigFactory, ConfigValue}
 
 import scala.util.Try
 import scala.util.control.NonFatal
 
-object Hocon {
+object Hocon extends HoconConfigDecoders {
 
-  val HoconPathType = ConfigKeyType[String]("hocon at path")
+  val HoconPathType: ConfigKeyType[String] = ConfigKeyType[String]("hocon at path")
 
-  val hoconSource: ConfigSource[Id, String, Config] =
-    ConfigSource.catchNonFatal(HoconPathType) {
-      case path => ConfigFactory.load().getConfig(path)
-    }
+  def hoconSource(config: Config): ConfigSource[Id, String, Config] =
+    ConfigSource.catchNonFatal(HoconPathType)(config.getConfig)
 
   final case class HoconKey(path: String, key: String) {
     override def toString: String = s"path=$path,key=$key"
   }
 
-  val HoconKeyType = ConfigKeyType[HoconKey]("hocon at key")
+  val HoconKeyType: ConfigKeyType[HoconKey] = ConfigKeyType[HoconKey]("hocon at key")
 
-  final class HoconAt(path: String) {
+  final class HoconAt(config: Config, path: String) {
     private val hocon: Either[ConfigError, Config] =
-      hoconSource
+      hoconSource(config)
         .read(path)
         .value
 
     private def hoconKey(key: String): HoconKey =
       HoconKey(path, key)
 
-    private def hoconAt(key: String): Either[ConfigError, String] =
-      hocon.flatMap { props =>
-        Try(props.getString(key)).toEither.left.map {
+    private def hoconAt(key: String): Either[ConfigError, ConfigValue] =
+      hocon.flatMap { c =>
+        Try(c.getValue(key)).toEither.left.map {
           case _: ConfigException.Missing =>
             ConfigError.missingKey(hoconKey(key), HoconKeyType)
           case NonFatal(ex) =>
@@ -58,8 +56,8 @@ object Hocon {
       }
 
     def apply[Value](key: String)(
-        implicit decoder: ConfigDecoder[String, Value]
-    ): ConfigEntry[Id, HoconKey, String, Value] =
+        implicit decoder: ConfigDecoder[ConfigValue, Value]
+    ): ConfigEntry[Id, HoconKey, ConfigValue, Value] =
       ConfigEntry(
         hoconKey(key),
         HoconKeyType,
@@ -71,5 +69,34 @@ object Hocon {
   }
 
   def hoconAt(path: String): HoconAt =
-    new HoconAt(path)
+    hoconAt(ConfigFactory.load())(path)
+
+  def hoconAt(config: Config)(path: String): HoconAt =
+    new HoconAt(config, path)
+}
+
+trait HoconConfigDecoders {
+  implicit val stringConfigDecoder: ConfigDecoder[ConfigValue, String] = {
+    ConfigDecoder.catchNonFatal("String") { value =>
+      value.atKey("t").getString("t")
+    }
+  }
+
+  implicit val javaTimeDurationConfigDecoder: ConfigDecoder[ConfigValue, java.time.Duration] =
+    ConfigDecoder.catchNonFatal("java.time.Duration") { value =>
+      value.atKey("t").getDuration("t")
+    }
+
+  implicit val javaPeriodConfigDecoder: ConfigDecoder[ConfigValue, java.time.Period] =
+    ConfigDecoder.catchNonFatal("java.time.Period") { value =>
+      value.atKey("t").getPeriod("t")
+    }
+
+  implicit def throughStringConfigDecoder[T](implicit dec: ConfigDecoder[String, T]): ConfigDecoder[ConfigValue, T] =
+    new ConfigDecoder[ConfigValue, T] {
+      override def decode[F[_]: Monad, K, S](
+          entry: ConfigEntry[F, K, S, ConfigValue]
+      ): F[Either[ConfigError, T]] =
+        entry.decodeValue[String].decodeValue[T].value
+    }
 }
