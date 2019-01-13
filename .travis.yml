@@ -1,0 +1,59 @@
+language: scala
+
+jobs:
+  include:
+    - stage: check
+      script: sbt scalafmtCheck || { echo "[error] Unformatted code found. Please run 'Test/compile' and commit the reformatted code."; false; }
+      name: "Code style check (fixed with `sbt Test/compile`)"
+    - script: sbt scalafmtSbtCheck || { echo "[error] Unformatted sbt code found. Please run 'scalafmtSbt' and commit the reformatted code."; false; }
+      name: "Build code style check (fixed with `sbt scalafmtSbt`)"
+
+    - stage: test
+      script: sbt test
+      name: "Run all tests"
+
+    - stage: publish
+      script: sbt publish bintraySyncMavenCentral
+      name: "Publish artifacts to Maven Central"
+    
+    - stage: publish-snapshot
+      script: sbt publish
+      name: "Publish artifacts to Bintray snapshot repository"
+
+stages:
+  # runs on master commits and PRs
+  - name: check
+    if: NOT tag =~ ^v
+
+  # runs on master commits and PRs
+  - name: test
+    if: NOT tag =~ ^v
+
+  # runs on main repo version-tagged commits
+  - name: publish
+    if: repo = 2m/ciris-hocon AND tag =~ ^v
+  
+  # runs on main repo master commits
+  - name: publish-snapshot
+    if: repo = 2m/ciris-hocon AND ( branch = master AND type = push )
+
+before_cache:
+  - find $HOME/.ivy2 -name "ivydata-*.properties" -print -delete
+  - find $HOME/.sbt  -name "*.lock"               -print -delete
+
+cache:
+  directories:
+    - $HOME/.ivy2/cache
+    - $HOME/.sbt/boot
+  timeout: 900
+
+env:
+  global:
+    # encrypt with: travis encrypt BINTRAY_USER=...
+    - secure: "iH/UMBsBrHtrxyF+mCn2tkmF9ED8NEySLi7Fh76T0RS7nNeUXEUP1NCUF1CqWEdABbkAZBBCI0yykbOZUNNTMYWD5U5DxOLIkBeZi70oRoKMgwUL10mDD7C7MqlGVx1tpQ2YNwd/fz26A71FyYG1La7QCpeyw3D2cjlGTj2yXpUauYEHcyBiyVUVb0hUaEIOFSmKrAGRz5SFHLFE8DdAzyDhVKbtcKWw0P8N0h4IbyfS72hLD66Iz2AOpm+0lkMdFENh02Y83JrVOd+2izVKwLkLi8TuxnVA1WKD2cFhCVT8qyzlrEQHDctqqCVqtgrokSehi0NciN5i7FG7QYV+Ss4ptixcwskZnD/ZRO/Rjj8+9eZlM6p46+X2yIOy+yEl4At2W0nVzGBinrYDJWPWkXSkbGGsvECnEMA3szJ3haRiKoC44dYncbyyfnQHvDuQ2cqwK94oppEoSX2aj6p6kEiqzvyjycjdB+mXmxylp3qG7E7PRhp3ZnXK8HCJC83NZn7X1mQnuL7JUMiU6eMBFBwY+hblu2moq0pWkpdKU9wA7kM2w8uqJsauVLNyGzGs/upjFshm/TQMavXXf7nToLdw7T9AdxesJ3ViOtWgpqeHKwbZwx0RXnH1aH/LZ2nd/Y/XyID+di61sCxenWBz3KtYkSOFBlHTQ/g2q16mRqw="
+    # encrypt with: travis encrypt BINTRAY_PASS=...
+    - secure: "OY409ypwtnIJvENawvN0UqA+P7wQUf7I50bSF+RMVncqvlpBalEKRG2jAEYkjeSQoS8/E3X+5OQGPPR3jo+De92+4o8r+KW0y4ZQf97FfI5Ib0P08LX/J3r+BiG9yFaySTrc5+K4T821UzHeQrqBH8bXD+Eop7QfvB50DqCm0DdU8jKg50JM6ugMTRTxvrYiMrjiTTXvp21mbpPvfjB7KGHQh74LtJRwQ4t6khjTQBeGswZzxS9IZvKA2Suie+DmNCmMpfXzZOIL5t6u+1wYAbZUE/3Uxz7Pr+eBHZwnvkn2t1vcSy3Upy/vEkINswPHCxPxc0LVZw4KGxAPrVZ4sn7oHcGbBvXef7NQA8xSYDNz26EjBsjOZ8z+5ueG1fUa2T54OYndFkJ4H4J5CDtqVnBjY/lVLshytyOh4dNkHfZwjc6wkCWpBJ1UC8CCjbA/Q0GYzFUivnDrerA0O0vBffNmfLUXUPmIelGN5O3Nl3Y4M58lF4asOhK5Ww7TBeqMtqY6wir7VowYC5JAjA6GGF9wE5jXaD6NsDpDthiwI6e5PPdnJ2MESMU0mqY2Qjs/zxfyULqkocKkR2VrPtpLfBg/q5+0QGLbm6/hQIZ34xfirKfhfUsmvYDcTdWHh8ZLwhxHJnQOI8KgCVABfl4j1w0Ypjdx3ykL6UZviw/9NEg="
+    # encrypt with: travis encrypt SONA_USER=...
+    - secure: "aR+FLixZXBmEXkE2c3GrkSvPWlVwkuRW3tOGXsK61raqRXEm1D0PE9rRNv1Ewd35QRxcNDTJBaTCSp2vIPJEIdTuB6XSEqKC6pj64Gv9cAwpBvbcxNvvHCVHi9o5AraW01CTh9EcExd3GbxAJzNf9VAjmNx32WrGFL/MRMLix5K93d7GCJrfcRAhTlNxQmX38Ag8r37i+4ndGi0W+H2EdA4ZZute3mcDDiywm0ZnraKQB0nWN4v6xEKIqL/vKzSh1VwOBMAuzB/XCxG9HarBMf3mTniCVoTdjTX66WrQcGl5WV4uebHwT4l9/EwMZhGfz91LAdcB1HUQp4990/yXOKcuFHAM/U0juRV1a59GU90wN53ceCWJsajjTlBikSeYrARhrmUA60La3vNf8xlyjpyGfgvSr4SZTjI0dn8gKksA+oakJBYpP2I4B7KFgDPWEOCZDlHqI1UlfsYmioUmkiXE3mQ6mYTrw+4r/oAsYmZYsyMSnoY5HorxxCUftSJtmsFyWBqZLqEzkLbrmRjgBjchsC2SPe67w6G2AGan2dIeuQ5bgNXexxKKaxcOpIe2hMcgvYxvw/3s0ELErheQTn51y9mB3J0Pd+gMAy/ycjVirAvHNCFWMAjVMxVuwSqNhkWWvH7Eu5JT3OlV7zVVfzZGII11qUZs4lyI/08F+ZY="
+    # encrypt with: travis encrypt SONA_PASS=...
+    - secure: "H+dRhjzDxavsdLqeUSsEJvQ6hopx2tcwe7gAHF3saEEav81tme795Xf9wGKxjOYocb9hniMUpJWrgAq7hRTNfxW3cOwV3wYnrX7IcYShvJZscrfqFjw01mvsOqFzeA7RwarJwsGLRZ+voEhh764iyxwQSp/bFXBkN3ZeOEY6r1xqEDgGFYksBrz2EMdsDhgcWGT9kXMWVFKWxHAi8rZt7bB0EMSo+NqTzTmd2dhz/qYvfOiHwC+Kt9Z0j0KiTBLUmvTdVaMBZScWSJr0wXo4R6zx79AmKIrEFIj9iGd7EbPF9w9memk2dPX8OK/VP5AItQ1SiqGyHX/hSW1Olen5HQnrswPZSdiNbmpG9m3jTkZTv1oGSLJKp1PK7XiJryAUpy1vyuzianvsxsLZy8KgRIJzzx+1DK26B1RH1I1ZdQ3SwgOMe3Sp1jvmOo+QAbF0EPhw2M/1tG5HNE1YnWY1kpdguw1ISUCQHfQYfntO9i7FxVRaxznWeTt8i0lMkxKgia19qahOox8nyeKjjqbsZgNc9dQPuCQ4oo4a5rsBDWRUQ4x1zSbHtWRIMaNTOWSgWPvqWdawyy8zgguF5lXc4Apf/zP4MboNTDveryTcb8AbSaoug1RZ9wQdfpsjSnV90iyLOHxmXRZ7CpQ5DxKeMGkISy4if3fIEIr5uvlGrzQ="
