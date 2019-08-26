@@ -19,10 +19,12 @@ startYear := Some(2018)
 licenses += ("Apache-2.0", url("http://www.apache.org/licenses/LICENSE-2.0"))
 homepage := Some(url("https://github.com/2m/ciris-hocon"))
 scmInfo := Some(ScmInfo(url("https://github.com/2m/ciris-hocon"), "git@github.com:2m/ciris-hocon.git"))
-developers += Developer("contributors",
-                        "Contributors",
-                        "https://gitter.im/2m/ciris-hocon",
-                        url("https://github.com/2m/ciris-hocon/graphs/contributors"))
+developers += Developer(
+  "contributors",
+  "Contributors",
+  "https://gitter.im/2m/ciris-hocon",
+  url("https://github.com/2m/ciris-hocon/graphs/contributors")
+)
 bintrayOrganization := Some("2m")
 bintrayRepository := (if (isSnapshot.value) "snapshots" else "maven")
 
