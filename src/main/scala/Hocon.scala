@@ -24,7 +24,6 @@ import scala.util.Try
 import scala.util.control.NonFatal
 
 object Hocon extends HoconConfigDecoders {
-
   val HoconPathType: ConfigKeyType[String] = ConfigKeyType[String]("hocon at path")
 
   def hoconSource(config: Config): ConfigSource[Id, String, Config] =
