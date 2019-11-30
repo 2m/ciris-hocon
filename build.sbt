@@ -1,7 +1,7 @@
 organization := "lt.dvim.ciris-hocon"
 name := "ciris-hocon"
 
-scalaVersion := "2.12.8"
+scalaVersion := "2.12.10"
 
 libraryDependencies ++= Seq(
   "is.cir"        %% "ciris-core" % "0.12.1",
