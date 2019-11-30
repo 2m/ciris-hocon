@@ -15,11 +15,12 @@
  */
 
 import com.typesafe.config.ConfigFactory
-import org.scalatest.{Matchers, WordSpec}
 
 import scala.concurrent.duration._
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpec
 
-class HoconSpec extends WordSpec with Matchers {
+class HoconSpec extends AnyWordSpec with Matchers {
   import lt.dvim.ciris.Hocon._
 
   private val config = ConfigFactory.parseString("""
@@ -54,5 +55,4 @@ class HoconSpec extends WordSpec with Matchers {
       nested[java.time.Period]("per").orThrow() shouldBe java.time.Period.ofWeeks(2)
     }
   }
-
 }
