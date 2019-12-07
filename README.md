@@ -17,7 +17,7 @@ The implementation of this library was created by following the excellent [Ciris
 Add the dependency to your project build settings:
 
 ```sbt
-libraryDependencies += "lt.dvim.ciris-hocon" %% "ciris-hocon" % "0.1"
+libraryDependencies += "lt.dvim.ciris-hocon" %% "ciris-hocon" % "0.2"
 ```
 
 Or a snapshot from a [snapshot repository](https://bintray.com/2m/snapshots/ciris-hocon) for which you will need an additional resolver:
