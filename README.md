@@ -26,10 +26,13 @@ Or a snapshot from a [snapshot repository](https://bintray.com/2m/snapshots/ciri
 resolvers += Resolver.bintrayRepo("2m", "snapshots")
 ```
 
-| version  | scala | ciris      |
-|----------|-------|------------|
-| 0.1      | 2.12  | 0.12.1     |
-| 0.2      | 2.13  | 0.13.0-RC1 |
+| version    | scala       | ciris      |
+|------------|-------------|------------|
+| 0.1        | 2.12        | 0.12.1     |
+| 0.2        | 2.13        | 0.13.0-RC1 |
+| [upstream] | 2.12, 2.13  | 1.0.x      |
+
+[upstream]: https://github.com/vlovgr/ciris/pull/284
 
 ## Example usage
 
