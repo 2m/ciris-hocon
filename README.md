@@ -26,6 +26,11 @@ Or a snapshot from a [snapshot repository](https://bintray.com/2m/snapshots/ciri
 resolvers += Resolver.bintrayRepo("2m", "snapshots")
 ```
 
+| version  | scala | ciris      |
+|----------|-------|------------|
+| 0.1      | 2.12  | 0.12.1     |
+| 0.2      | 2.13  | 0.13.0-RC1 |
+
 ## Example usage
 
 This library provides configuration sources as well as decoders from [`ConfigValue`](https://lightbend.github.io/config/latest/api/?com/typesafe/config/ConfigValue.html) values.
