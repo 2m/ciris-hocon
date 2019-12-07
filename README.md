@@ -5,12 +5,12 @@
 [scaladex-badge]:     https://index.scala-lang.org/2m/ciris-hocon/latest.svg
 [travis]:             https://travis-ci.com/2m/ciris-hocon
 [travis-badge]:       https://travis-ci.com/2m/ciris-hocon.svg?branch=master
-[gitter]:             https://gitter.im/2m/ciris-hocon
-[gitter-badge]:       https://badges.gitter.im/2m/ciris-hocon.svg
+[gitter]:             https://gitter.im/vlovgr/ciris
+[gitter-badge]:       https://badges.gitter.im/vlovgr/ciris.svg
 
 `ciris-hocon` provides a [HOCON](https://github.com/lightbend/config/blob/master/HOCON.md) configuration source for [Ciris](https://cir.is/) configuration loading library.
 
-The implementation of this library was created by following the excellent [Ciris documentation](https://cir.is/docs/supporting-new-sources).
+The implementation of this library was created by following the excellent [Ciris documentation](https://github.com/vlovgr/ciris/blob/v0.13.0-RC1/docs/src/main/tut/docs/supporting-new-sources.md).
 
 ## Setup
 
