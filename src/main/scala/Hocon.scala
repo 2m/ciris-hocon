@@ -76,20 +76,14 @@ object Hocon extends HoconConfigDecoders {
 
 trait HoconConfigDecoders {
   implicit val stringConfigDecoder: ConfigDecoder[ConfigValue, String] = {
-    ConfigDecoder.catchNonFatal("String") { value =>
-      value.atKey("t").getString("t")
-    }
+    ConfigDecoder.catchNonFatal("String")(value => value.atKey("t").getString("t"))
   }
 
   implicit val javaTimeDurationConfigDecoder: ConfigDecoder[ConfigValue, java.time.Duration] =
-    ConfigDecoder.catchNonFatal("java.time.Duration") { value =>
-      value.atKey("t").getDuration("t")
-    }
+    ConfigDecoder.catchNonFatal("java.time.Duration")(value => value.atKey("t").getDuration("t"))
 
   implicit val javaPeriodConfigDecoder: ConfigDecoder[ConfigValue, java.time.Period] =
-    ConfigDecoder.catchNonFatal("java.time.Period") { value =>
-      value.atKey("t").getPeriod("t")
-    }
+    ConfigDecoder.catchNonFatal("java.time.Period")(value => value.atKey("t").getPeriod("t"))
 
   implicit def throughStringConfigDecoder[T](implicit dec: ConfigDecoder[String, T]): ConfigDecoder[ConfigValue, T] =
     new ConfigDecoder[ConfigValue, T] {
