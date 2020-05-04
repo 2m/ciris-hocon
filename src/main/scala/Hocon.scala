@@ -54,8 +54,8 @@ object Hocon extends HoconConfigDecoders {
         }
       }
 
-    def apply[Value](key: String)(
-        implicit decoder: ConfigDecoder[ConfigValue, Value]
+    def apply[Value](key: String)(implicit
+        decoder: ConfigDecoder[ConfigValue, Value]
     ): ConfigEntry[Id, HoconKey, ConfigValue, Value] =
       ConfigEntry(
         hoconKey(key),
@@ -75,9 +75,8 @@ object Hocon extends HoconConfigDecoders {
 }
 
 trait HoconConfigDecoders {
-  implicit val stringConfigDecoder: ConfigDecoder[ConfigValue, String] = {
+  implicit val stringConfigDecoder: ConfigDecoder[ConfigValue, String] =
     ConfigDecoder.catchNonFatal("String")(value => value.atKey("t").getString("t"))
-  }
 
   implicit val javaTimeDurationConfigDecoder: ConfigDecoder[ConfigValue, java.time.Duration] =
     ConfigDecoder.catchNonFatal("java.time.Duration")(value => value.atKey("t").getDuration("t"))
