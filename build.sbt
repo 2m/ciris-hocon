@@ -5,7 +5,7 @@ scalaVersion := "2.13.1"
 
 libraryDependencies ++= Seq(
   "is.cir"        %% "ciris-core" % "0.13.0-RC1",
-  "com.typesafe"  % "config"      % "1.4.0",
+  "com.typesafe"   % "config"     % "1.4.0",
   "org.scalatest" %% "scalatest"  % "3.1.1" % "test"
 )
 
