@@ -1,10 +1,10 @@
-# [ciris-hocon][] [![scaladex-badge][]][scaladex] [![travis-badge][]][travis] [![gitter-badge][]][gitter]
+# [ciris-hocon][] [![scaladex-badge][]][scaladex] [![ci-badge][]][ci] [![gitter-badge][]][gitter]
 
 [ciris-hocon]:        https://github.com/2m/ciris-hocon
 [scaladex]:           https://index.scala-lang.org/2m/ciris-hocon
 [scaladex-badge]:     https://index.scala-lang.org/2m/ciris-hocon/latest.svg
-[travis]:             https://travis-ci.com/2m/ciris-hocon
-[travis-badge]:       https://travis-ci.com/2m/ciris-hocon.svg?branch=master
+[ci]:                 https://github.com/2m/ciris-hocon/actions
+[ci-badge]:           https://github.com/2m/ciris-hocon/workflows/ci/badge.svg
 [gitter]:             https://gitter.im/vlovgr/ciris
 [gitter-badge]:       https://badges.gitter.im/vlovgr/ciris.svg
 

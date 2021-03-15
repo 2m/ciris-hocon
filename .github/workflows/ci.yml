@@ -1,0 +1,38 @@
+---
+name: ci
+
+on:  # yamllint disable-line rule:truthy
+  push:
+    branches:
+    - master
+  pull_request:
+
+jobs:
+  checks:
+    name: Format and style checks
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+    steps:
+    - uses: actions/checkout@v2.3.4
+    - uses: olafurpg/setup-scala@v10
+      with:
+        java-version: adopt@1.14
+    - run: sbt ";scalafixAll --check"
+    - run: sbt scalafmtCheckAll
+    - run: sbt scalafmtSbtCheck
+    - run: sbt headerCheckAll
+    - name: yaml-lint
+      uses: ibiqlik/action-yamllint@v3
+
+  test:
+    name: Compile and test
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+    steps:
+    - uses: actions/checkout@v2.3.4
+    - uses: olafurpg/setup-scala@v10
+      with:
+        java-version: adopt@1.14
+    - run: sbt test

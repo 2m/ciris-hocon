@@ -10,6 +10,11 @@ libraryDependencies ++= Seq(
 )
 
 scalafmtOnCompile := true
+scalafixOnCompile := true
+
+ThisBuild / scalafixDependencies ++= Seq(
+  "com.nequissimus" %% "sort-imports" % "0.5.5"
+)
 
 // show full stack traces and test case durations
 testOptions in Test += Tests.Argument("-oDF")
