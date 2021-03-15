@@ -16,12 +16,12 @@
 
 package lt.dvim.ciris
 
-import ciris.{ConfigValue => _, _}
-import ciris.api.{Id, Monad}
-import com.typesafe.config.{Config, ConfigException, ConfigFactory, ConfigValue}
-
 import scala.util.Try
 import scala.util.control.NonFatal
+
+import ciris.api.{Id, Monad}
+import ciris.{ConfigValue => _, _}
+import com.typesafe.config.{Config, ConfigException, ConfigFactory, ConfigValue}
 
 object Hocon extends HoconConfigDecoders {
   val HoconPathType: ConfigKeyType[String] = ConfigKeyType[String]("hocon at path")

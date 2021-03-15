@@ -1,14 +1,24 @@
 pull_request_rules:
-  - name: Merge PRs from Scala Steward that pass validation
-    conditions:
-      - status-success=Travis CI - Pull Request
-      - author=scala-steward
-    actions:
-      merge:
-        method: merge
-        
-  - name: Delete the PR branch after merge
-    conditions:
-      - merged
-    actions:
-      delete_head_branch: {}
+- name: Merge PRs from Scala Steward that pass validation
+  conditions:
+  - status-success~=Format and style checks
+  - status-success~=Compile and test
+  - author=scala-steward
+  actions:
+    merge:
+      method: merge
+
+- name: Merge PRs from dependabot that pass validation
+  conditions:
+  - status-success~=Format and style checks
+  - status-success~=Compile and test
+  - author=dependabot[bot]
+  actions:
+    merge:
+      method: merge
+
+- name: Delete the PR branch after merge
+  conditions:
+  - merged
+  actions:
+    delete_head_branch: {}
