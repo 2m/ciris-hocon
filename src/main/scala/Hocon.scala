@@ -17,7 +17,6 @@
 package lt.dvim.ciris
 
 import scala.util.Try
-import scala.util.control.NonFatal
 
 import ciris.api.{Id, Monad}
 import ciris.{ConfigValue => _, _}
@@ -49,7 +48,7 @@ object Hocon extends HoconConfigDecoders {
         Try(c.getValue(key)).toEither.left.map {
           case _: ConfigException.Missing =>
             ConfigError.missingKey(hoconKey(key), HoconKeyType)
-          case NonFatal(ex) =>
+          case ex =>
             ConfigError.readException(hoconKey(key), HoconKeyType, ex)
         }
       }
