@@ -1,5 +1,6 @@
 organization := "lt.dvim.ciris-hocon"
 name := "ciris-hocon"
+description := "Provides HOCON configuration source for Ciris"
 
 scalaVersion := "2.13.5"
 
@@ -19,18 +20,15 @@ ThisBuild / scalafixDependencies ++= Seq(
 // show full stack traces and test case durations
 testOptions in Test += Tests.Argument("-oDF")
 
-organizationName := "Martynas Mickevičius"
+enablePlugins(AutomateHeaderPlugin)
+organizationName := "github.com/2m/ciris-hocon/contributors"
 startYear := Some(2018)
 licenses += ("Apache-2.0", url("http://www.apache.org/licenses/LICENSE-2.0"))
 homepage := Some(url("https://github.com/2m/ciris-hocon"))
-scmInfo := Some(ScmInfo(url("https://github.com/2m/ciris-hocon"), "git@github.com:2m/ciris-hocon.git"))
 developers += Developer(
   "contributors",
   "Contributors",
-  "https://gitter.im/2m/ciris-hocon",
-  url("https://github.com/2m/ciris-hocon/graphs/contributors")
+  "https://gitter.im/2m/general",
+  url("https://github.com/2m/ciris-hocon/contributors")
 )
-bintrayOrganization := Some("2m")
-bintrayRepository := (if (isSnapshot.value) "snapshots" else "maven")
-
-enablePlugins(AutomateHeaderPlugin)
+sonatypeProfileName := "lt.dvim"
