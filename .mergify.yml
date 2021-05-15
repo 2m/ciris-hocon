@@ -17,6 +17,20 @@ pull_request_rules:
     merge:
       method: merge
 
+- name: Label Scala Steward PRs
+  conditions:
+  - author=scala-steward
+  actions:
+    label:
+      add: ["dependencies"]
+
+- name: Label dependabot PRs
+  conditions:
+  - author=dependabot[bot]
+  actions:
+    label:
+      add: ["dependencies"]
+
 - name: Delete the PR branch after merge
   conditions:
   - merged

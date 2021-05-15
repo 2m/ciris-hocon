@@ -16,11 +16,15 @@
 
 import scala.concurrent.duration._
 
+import cats.effect.IO
 import com.typesafe.config.ConfigFactory
+import org.scalatest.EitherValues
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
-class HoconSpec extends AnyWordSpec with Matchers {
+class HoconSpec extends AnyWordSpec with Matchers with EitherValues {
+  import cats.effect.unsafe.implicits.global
+
   import lt.dvim.ciris.Hocon._
 
   private val config = ConfigFactory.parseString("""
@@ -35,24 +39,44 @@ class HoconSpec extends AnyWordSpec with Matchers {
       |}
     """.stripMargin)
 
-  private val nested = hoconAt(config)("nested.config")
+  private val hocon = hoconAt(config)("nested.config")
 
   "ciris-hocon" should {
     "parse Int" in {
-      nested[Int]("int").orThrow() shouldBe 2
+      hocon("int").as[Int].load[IO].unsafeRunSync() shouldBe 2
     }
     "parse String" in {
-      nested[String]("str").orThrow() shouldBe "labas"
+      hocon("str").as[String].load[IO].unsafeRunSync() shouldBe "labas"
     }
     "parse Duration" in {
-      nested[java.time.Duration]("dur").orThrow() shouldBe java.time.Duration.ofMillis(10)
-      nested[FiniteDuration]("dur").orThrow() shouldBe 10.millis
+      hocon("dur").as[java.time.Duration].load[IO].unsafeRunSync() shouldBe java.time.Duration.ofMillis(10)
+      hocon("dur").as[FiniteDuration].load[IO].unsafeRunSync() shouldBe 10.millis
     }
     "parse Boolean" in {
-      nested[Boolean]("bool").orThrow() shouldBe true
+      hocon("bool").as[Boolean].load[IO].unsafeRunSync() shouldBe true
     }
     "parse Period" in {
-      nested[java.time.Period]("per").orThrow() shouldBe java.time.Period.ofWeeks(2)
+      hocon("per").as[java.time.Period].load[IO].unsafeRunSync() shouldBe java.time.Period.ofWeeks(2)
+    }
+    "handle missing" in {
+      hocon("missing")
+        .as[Int]
+        .attempt[IO]
+        .unsafeRunSync()
+        .left
+        .value
+        .messages
+        .toList should contain("Missing nested.config.missing")
+    }
+    "handle decode error" in {
+      hocon("str")
+        .as[Int]
+        .attempt[IO]
+        .unsafeRunSync()
+        .left
+        .value
+        .messages
+        .toList should contain("Nested.config.str with value labas cannot be converted to Int")
     }
   }
 }
