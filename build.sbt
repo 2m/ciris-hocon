@@ -18,7 +18,7 @@ ThisBuild / scalafixDependencies ++= Seq(
 )
 
 // show full stack traces and test case durations
-testOptions in Test += Tests.Argument("-oDF")
+Test / testOptions += Tests.Argument("-oDF")
 
 enablePlugins(AutomateHeaderPlugin)
 organizationName := "github.com/2m/ciris-hocon/contributors"
