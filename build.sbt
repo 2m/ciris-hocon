@@ -7,7 +7,7 @@ scalaVersion := "2.13.6"
 libraryDependencies ++= Seq(
   "is.cir"        %% "ciris-core" % "0.13.0-RC1",
   "com.typesafe"   % "config"     % "1.4.1",
-  "org.scalatest" %% "scalatest"  % "3.2.8" % "test"
+  "org.scalatest" %% "scalatest"  % "3.2.9" % "test"
 )
 
 scalafmtOnCompile := true
