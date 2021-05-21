@@ -26,7 +26,7 @@ Or a snapshot from a [snapshot repository](https://oss.sonatype.org/content/repo
 |------------|-------------|------------|
 | 0.1        | 2.12        | 0.12.1     |
 | 0.2.1      | 2.13        | 0.13.0-RC1 |
-| 1.0.0      | 2.13        | 2.0.0      |
+| 1.0.0      | 2.13, 3     | 2.0.0-RC3  |
 
 ## Example usage
 
@@ -58,7 +58,7 @@ val rate = (
   hocon("elements").as[Int],
   hocon("burst-duration").as[FiniteDuration],
   hocon("check-interval").as[Period]
-).parMapN(Rate).load[IO].unsafeRunSync()
+).parMapN(Rate.apply).load[IO].unsafeRunSync()
 
 rate.burstDuration shouldBe 100.millis
 rate.checkInterval shouldBe Period.ofWeeks(2)

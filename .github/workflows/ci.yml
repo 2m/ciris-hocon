@@ -39,5 +39,5 @@ jobs:
       with:
         jvm: adopt:14
         apps: sbtn
-    - run: sbtn compile
-    - run: sbtn test
+    - run: sbtn +compile
+    - run: sbtn +test
