@@ -5,9 +5,10 @@ description := "Provides HOCON configuration source for Ciris"
 scalaVersion := "2.13.6"
 
 libraryDependencies ++= Seq(
-  "is.cir"        %% "ciris-core" % "0.13.0-RC1",
-  "com.typesafe"   % "config"     % "1.4.1",
-  "org.scalatest" %% "scalatest"  % "3.2.9" % "test"
+  "is.cir"        %% "ciris"       % "2.0.0-RC3",
+  "com.typesafe"   % "config"      % "1.4.1",
+  "org.scalatest" %% "scalatest"   % "3.2.9" % "test",
+  "org.typelevel" %% "cats-effect" % "3.1.1" % "test"
 )
 
 scalafmtOnCompile := true

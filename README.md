@@ -10,14 +10,14 @@
 
 `ciris-hocon` provides a [HOCON](https://github.com/lightbend/config/blob/master/HOCON.md) configuration source for [Ciris](https://cir.is/) configuration loading library.
 
-The implementation of this library was created by following the excellent [Ciris documentation](https://github.com/vlovgr/ciris/blob/v0.13.0-RC1/docs/src/main/tut/docs/supporting-new-sources.md).
+The implementation of this library was created by following the excellent [Ciris documentation](https://github.com/vlovgr/ciris/blob/v2.0.0-RC3/docs/src/main/mdoc/configurations.md#sources).
 
 ## Setup
 
 Add the dependency to your project build settings:
 
 ```sbt
-libraryDependencies += "lt.dvim.ciris-hocon" %% "ciris-hocon" % "0.2.1"
+libraryDependencies += "lt.dvim.ciris-hocon" %% "ciris-hocon" % "1.0.0"
 ```
 
 Or a snapshot from a [snapshot repository](https://oss.sonatype.org/content/repositories/snapshots/lt/dvim/ciris-hocon/).
@@ -26,20 +26,22 @@ Or a snapshot from a [snapshot repository](https://oss.sonatype.org/content/repo
 |------------|-------------|------------|
 | 0.1        | 2.12        | 0.12.1     |
 | 0.2.1      | 2.13        | 0.13.0-RC1 |
-| [upstream] | 2.12, 2.13  | 1.0.x      |
-
-[upstream]: https://github.com/vlovgr/ciris/pull/284
+| 1.0.0      | 2.13        | 2.0.0      |
 
 ## Example usage
 
 This library provides configuration sources as well as decoders from [`ConfigValue`](https://lightbend.github.io/config/latest/api/?com/typesafe/config/ConfigValue.html) values.
 
 ```scala
-import ciris._
-import lt.dvim.ciris.Hocon._
-import com.typesafe.config.ConfigFactory
-import scala.concurrent.duration._
 import java.time.Period
+import scala.concurrent.duration._
+
+import cats.effect.IO
+import cats.effect.unsafe.implicits.global
+import cats.implicits._
+import com.typesafe.config.ConfigFactory
+
+import lt.dvim.ciris.Hocon._
 
 val config = ConfigFactory.parseString("""
     |rate {
@@ -52,11 +54,11 @@ val config = ConfigFactory.parseString("""
 case class Rate(elements: Int, burstDuration: FiniteDuration, checkInterval: Period)
 
 val hocon = hoconAt(config)("rate")
-val rate = loadConfig(
-  hocon[Int]("elements"),
-  hocon[FiniteDuration]("burst-duration"),
-  hocon[Period]("check-interval")
-)(Rate.apply).orThrow()
+val rate = (
+  hocon("elements").as[Int],
+  hocon("burst-duration").as[FiniteDuration],
+  hocon("check-interval").as[Period]
+).parMapN(Rate).load[IO].unsafeRunSync()
 
 rate.burstDuration shouldBe 100.millis
 rate.checkInterval shouldBe Period.ofWeeks(2)

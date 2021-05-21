@@ -2,7 +2,9 @@ name: Release
 on:  # yamllint disable-line rule:truthy
   push:
     branches: main
-    tags: ["*"]
+  pull_request:
+  release:
+    types: [published]
 jobs:
   publish:
     runs-on: ubuntu-20.04
@@ -11,7 +13,6 @@ jobs:
       with:
         fetch-depth: 0
     - uses: olafurpg/setup-scala@v10
-    - uses: olafurpg/setup-gpg@v3
     - run: sbt ci-release
       env:
         PGP_PASSPHRASE: ${{ secrets.PGP_PASSPHRASE }}
