@@ -34,3 +34,4 @@ developers += Developer(
   url("https://github.com/2m/ciris-hocon/contributors")
 )
 sonatypeProfileName := "lt.dvim"
+versionScheme := Some("semver-spec")
