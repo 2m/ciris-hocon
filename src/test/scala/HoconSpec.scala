@@ -17,14 +17,13 @@
 import scala.concurrent.duration._
 
 import cats.effect.IO
+import cats.effect.testing.scalatest.AsyncIOSpec
 import com.typesafe.config.ConfigFactory
 import org.scalatest.EitherValues
 import org.scalatest.matchers.should.Matchers
-import org.scalatest.wordspec.AnyWordSpec
+import org.scalatest.wordspec.AsyncWordSpec
 
-class HoconSpec extends AnyWordSpec with Matchers with EitherValues {
-  import cats.effect.unsafe.implicits.global
-
+class HoconSpec extends AsyncWordSpec with Matchers with EitherValues with AsyncIOSpec {
   import lt.dvim.ciris.Hocon._
 
   private val config = ConfigFactory.parseString("""
@@ -43,20 +42,22 @@ class HoconSpec extends AnyWordSpec with Matchers with EitherValues {
 
   "ciris-hocon" should {
     "parse Int" in {
-      hocon("int").as[Int].load[IO].unsafeRunSync() shouldBe 2
+      hocon("int").as[Int].load[IO].asserting(_ shouldBe 2)
     }
     "parse String" in {
-      hocon("str").as[String].load[IO].unsafeRunSync() shouldBe "labas"
+      hocon("str").as[String].load[IO].asserting(_ shouldBe "labas")
     }
-    "parse Duration" in {
-      hocon("dur").as[java.time.Duration].load[IO].unsafeRunSync() shouldBe java.time.Duration.ofMillis(10)
-      hocon("dur").as[FiniteDuration].load[IO].unsafeRunSync() shouldBe 10.millis
+    "parse java Duration" in {
+      hocon("dur").as[java.time.Duration].load[IO].asserting(_ shouldBe java.time.Duration.ofMillis(10))
+    }
+    "parse scala Duration" in {
+      hocon("dur").as[FiniteDuration].load[IO].asserting(_ shouldBe 10.millis)
     }
     "parse Boolean" in {
-      hocon("bool").as[Boolean].load[IO].unsafeRunSync() shouldBe true
+      hocon("bool").as[Boolean].load[IO].asserting(_ shouldBe true)
     }
     "parse Period" in {
-      hocon("per").as[java.time.Period].load[IO].unsafeRunSync() shouldBe java.time.Period.ofWeeks(2)
+      hocon("per").as[java.time.Period].load[IO].asserting(_ shouldBe java.time.Period.ofWeeks(2))
     }
     "handle missing" in {
       hocon("missing")

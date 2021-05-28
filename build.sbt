@@ -6,10 +6,11 @@ scalaVersion := "2.13.6"
 crossScalaVersions += "3.0.0-RC3"
 
 libraryDependencies ++= Seq(
-  "is.cir"        %% "ciris"       % "2.0.0-RC3",
-  "com.typesafe"   % "config"      % "1.4.1",
-  "org.scalatest" %% "scalatest"   % "3.2.8" % "test",
-  "org.typelevel" %% "cats-effect" % "3.1.0" % "test"
+  "is.cir"        %% "ciris"                         % "2.0.0-RC3",
+  "com.typesafe"   % "config"                        % "1.4.1",
+  "org.scalatest" %% "scalatest"                     % "3.2.8" % "test",
+  "org.typelevel" %% "cats-effect-testing-scalatest" % "1.1.0" % "test",
+  "org.typelevel" %% "cats-effect"                   % "3.1.0" % "test"
 )
 
 scalafmtOnCompile := true
