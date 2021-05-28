@@ -35,3 +35,8 @@ developers += Developer(
 )
 sonatypeProfileName := "lt.dvim"
 versionScheme := Some("semver-spec")
+
+val filterFuture = { options: Seq[String] =>
+  options.filterNot(Set("-source", "future"))
+}
+scalacOptions ~= filterFuture
