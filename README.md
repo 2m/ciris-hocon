@@ -26,7 +26,7 @@ Or a snapshot from a [snapshot repository](https://oss.sonatype.org/content/repo
 |------------|-------------|------------|
 | 0.1        | 2.12        | 0.12.1     |
 | 0.2.1      | 2.13        | 0.13.0-RC1 |
-| 1.0.0      | 2.13, 3     | 2.0.0-RC3  |
+| 1.0.0      | 2.13, 3     | 2.0.0      |
 
 ## Example usage
 
@@ -37,7 +37,6 @@ import java.time.Period
 import scala.concurrent.duration._
 
 import cats.effect.IO
-import cats.effect.unsafe.implicits.global
 import cats.implicits._
 import com.typesafe.config.ConfigFactory
 
@@ -54,12 +53,12 @@ val config = ConfigFactory.parseString("""
 case class Rate(elements: Int, burstDuration: FiniteDuration, checkInterval: Period)
 
 val hocon = hoconAt(config)("rate")
-val rate = (
+(
   hocon("elements").as[Int],
   hocon("burst-duration").as[FiniteDuration],
   hocon("check-interval").as[Period]
-).parMapN(Rate.apply).load[IO].unsafeRunSync()
-
-rate.burstDuration shouldBe 100.millis
-rate.checkInterval shouldBe Period.ofWeeks(2)
+).parMapN(Rate.apply).load[IO].map { rate =>
+  assertEquals(rate.burstDuration, 100.millis)
+  assertEquals(rate.checkInterval, Period.ofWeeks(2))
+}
 ```
