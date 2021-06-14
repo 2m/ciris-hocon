@@ -8,7 +8,7 @@ crossScalaVersions += "3.0.0"
 libraryDependencies ++= Seq(
   "is.cir"        %% "ciris"               % "2.0.1",
   "com.typesafe"   % "config"              % "1.4.1",
-  "org.typelevel" %% "munit-cats-effect-3" % "1.0.3" % "test",
+  "org.typelevel" %% "munit-cats-effect-3" % "1.0.5" % "test",
   "org.typelevel" %% "cats-effect"         % "3.1.1" % "test"
 )
 
