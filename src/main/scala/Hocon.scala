@@ -41,7 +41,7 @@ object Hocon extends HoconConfigDecoders {
     hoconAt(ConfigFactory.load())(path)
 
   def hoconAt(config: Config)(path: String): HoconAt =
-    new HoconAt(config, path)
+    new HoconAt(config.resolve(), path)
 }
 
 trait HoconConfigDecoders {

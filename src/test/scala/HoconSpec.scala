@@ -23,7 +23,7 @@ import munit.CatsEffectSuite
 class HoconSpec extends CatsEffectSuite {
   import lt.dvim.ciris.Hocon._
 
-  private val config = ConfigFactory.parseString("""
+  private val config = ConfigFactory.parseString(s"""
       |nested {
       |  config {
       |    int = 2
@@ -33,30 +33,34 @@ class HoconSpec extends CatsEffectSuite {
       |    per = 2 weeks
       |  }
       |}
+      |subst {
+      |  int = $${nested.config.int}
+      |}
     """.stripMargin)
 
-  private val hocon = hoconAt(config)("nested.config")
+  private val nested = hoconAt(config)("nested.config")
+  private val subst = hoconAt(config)("subst")
 
   test("parse Int") {
-    hocon("int").as[Int].load[IO] assertEquals 2
+    nested("int").as[Int].load[IO] assertEquals 2
   }
   test("parse String") {
-    hocon("str").as[String].load[IO] assertEquals "labas"
+    nested("str").as[String].load[IO] assertEquals "labas"
   }
   test("parse java Duration") {
-    hocon("dur").as[java.time.Duration].load[IO] assertEquals java.time.Duration.ofMillis(10)
+    nested("dur").as[java.time.Duration].load[IO] assertEquals java.time.Duration.ofMillis(10)
   }
   test("parse scala Duration") {
-    hocon("dur").as[FiniteDuration].load[IO] assertEquals 10.millis
+    nested("dur").as[FiniteDuration].load[IO] assertEquals 10.millis
   }
   test("parse Boolean") {
-    hocon("bool").as[Boolean].load[IO] assertEquals true
+    nested("bool").as[Boolean].load[IO] assertEquals true
   }
   test("parse Period") {
-    hocon("per").as[java.time.Period].load[IO] assertEquals java.time.Period.ofWeeks(2)
+    nested("per").as[java.time.Period].load[IO] assertEquals java.time.Period.ofWeeks(2)
   }
   test("handle missing") {
-    hocon("missing")
+    nested("missing")
       .as[Int]
       .attempt[IO]
       .map {
@@ -66,7 +70,7 @@ class HoconSpec extends CatsEffectSuite {
       .assertEquals("Missing nested.config.missing")
   }
   test("handle decode error") {
-    hocon("str")
+    nested("str")
       .as[Int]
       .attempt[IO]
       .map {
@@ -74,5 +78,8 @@ class HoconSpec extends CatsEffectSuite {
         case Right(_)  => "config loaded"
       }
       .assertEquals("Nested.config.str with value labas cannot be converted to Int")
+  }
+  test("resolve substitutions") {
+    subst("int").as[Int].load[IO] assertEquals 2
   }
 }
