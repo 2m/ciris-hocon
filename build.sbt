@@ -3,13 +3,13 @@ name := "ciris-hocon"
 description := "Provides HOCON configuration source for Ciris"
 
 scalaVersion := "2.13.10"
-crossScalaVersions += "3.2.0"
+crossScalaVersions += "3.2.1"
 
 libraryDependencies ++= Seq(
-  "is.cir"        %% "ciris"               % "2.4.0",
+  "is.cir"        %% "ciris"               % "3.0.0",
   "com.typesafe"   % "config"              % "1.4.2",
-  "org.typelevel" %% "munit-cats-effect-3" % "1.0.7"  % "test",
-  "org.typelevel" %% "cats-effect"         % "3.3.14" % "test"
+  "org.typelevel" %% "munit-cats-effect-3" % "1.0.7" % "test",
+  "org.typelevel" %% "cats-effect"         % "3.4.0" % "test"
 )
 
 scalafmtOnCompile := true
