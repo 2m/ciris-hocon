@@ -16,10 +16,9 @@
 
 package lt.dvim.ciris
 
-import scala.concurrent.duration.FiniteDuration
+import scala.jdk.CollectionConverters._
 import scala.util.Try
 
-import cats.Show
 import ciris._
 import com.typesafe.config.{Config, ConfigException, ConfigFactory, ConfigValue => HoconConfigValue}
 
@@ -28,20 +27,12 @@ object Hocon extends HoconConfigDecoders {
   final class HoconAt(config: Config, path: String) {
     def apply(name: String): ConfigValue[Effect, HoconConfigValue] =
       Try(config.getValue(fullPath(name))).fold(
-        errHandler(name),
+        {
+          case _: ConfigException.Missing => ConfigValue.missing(key(name))
+          case ex                         => ConfigValue.failed(ConfigError(ex.getMessage))
+        },
         ConfigValue.loaded(key(name), _)
       )
-
-    def list(name: String): ConfigValue[Effect, HoconConfigValue] =
-      Try(config.getList(fullPath(name))).fold(
-        errHandler(name),
-        ConfigValue.loaded(key(name), _)
-      )
-
-    private def errHandler(name: String): Throwable => ConfigValue[Effect, HoconConfigValue] = {
-      case _: ConfigException.Missing => ConfigValue.missing(key(name))
-      case ex                         => ConfigValue.failed(ConfigError(ex.getMessage))
-    }
 
     private def key(name: String) = ConfigKey(fullPath(name))
     private def fullPath(name: String) = s"$path.$name"
@@ -58,48 +49,17 @@ trait HoconConfigDecoders {
   implicit val stringHoconDecoder: ConfigDecoder[HoconConfigValue, String] =
     ConfigDecoder[HoconConfigValue].map(_.atKey("t").getString("t"))
 
-  private implicit val show: Show[HoconConfigValue] = new Show[HoconConfigValue]() {
-    def show(t: HoconConfigValue): String = t.toString
-  }
-
-  implicit val listStringHoconDecoder: ConfigDecoder[HoconConfigValue, List[String]] =
-    ConfigDecoder[HoconConfigValue].mapOption("List[String]") { c =>
-      Try(asScalaList(c.atKey("t").getStringList("t"))).toOption
-    }
-
-  implicit val listIntHoconDecoder: ConfigDecoder[HoconConfigValue, List[Int]] =
-    ConfigDecoder[HoconConfigValue].mapOption("List[Int]") { c =>
-      Try(asScalaList(c.atKey("t").getIntList("t")).map(_.intValue())).toOption
-    }
-
-  implicit val listLongHoconDecoder: ConfigDecoder[HoconConfigValue, List[Long]] =
-    ConfigDecoder[HoconConfigValue].mapOption("List[Long]") { c =>
-      Try(asScalaList(c.atKey("t").getLongList("t")).map(_.longValue())).toOption
-    }
-
-  implicit val listBooleanHoconDecoder: ConfigDecoder[HoconConfigValue, List[Boolean]] =
-    ConfigDecoder[HoconConfigValue].mapOption("List[Boolean]") { c =>
-      Try(asScalaList(c.atKey("t").getBooleanList("t")).map(_.booleanValue())).toOption
-    }
-
-  implicit val listDoubleHoconDecoder: ConfigDecoder[HoconConfigValue, List[Double]] =
-    ConfigDecoder[HoconConfigValue].mapOption("List[Double]") { c =>
-      Try(asScalaList(c.atKey("t").getDoubleList("t")).map(_.doubleValue())).toOption
-    }
-
-  implicit val listJavaDurationHoconDecoder: ConfigDecoder[HoconConfigValue, List[java.time.Duration]] =
-    ConfigDecoder[HoconConfigValue].mapOption("List[java.time.Duration]") { c =>
-      Try(asScalaList(c.atKey("t").getDurationList("t"))).toOption
-    }
-
-  implicit val listDurationHoconDecoder: ConfigDecoder[HoconConfigValue, List[FiniteDuration]] =
-    ConfigDecoder[HoconConfigValue].mapOption("List[FiniteDuration]") { c =>
-      Try {
-        asScalaList(c.atKey("t").getDurationList("t"))
-          .map(_.toNanos)
-          .map(scala.concurrent.duration.Duration.fromNanos)
-      }.toOption
-    }
+  implicit def listHoconDecoder[T](implicit
+      decoder: ConfigDecoder[HoconConfigValue, T]
+  ): ConfigDecoder[HoconConfigValue, List[T]] =
+    ConfigDecoder[HoconConfigValue]
+      .map(_.atKey("t").getList("t").asScala.toList)
+      .mapEither { (key, list) =>
+        list.map(decoder.decode(key, _)).partitionMap(identity) match {
+          case (Nil, rights)       => Right(rights)
+          case (firstLeft :: _, _) => Left(firstLeft)
+        }
+      }
 
   implicit val javaTimeDurationHoconDecoder: ConfigDecoder[HoconConfigValue, java.time.Duration] =
     ConfigDecoder[HoconConfigValue].map(_.atKey("t").getDuration("t"))
@@ -109,11 +69,4 @@ trait HoconConfigDecoders {
 
   implicit def throughStringHoconDecoder[T](implicit d: ConfigDecoder[String, T]): ConfigDecoder[HoconConfigValue, T] =
     stringHoconDecoder.as[T]
-
-  private def asScalaList[T](collection: java.util.Collection[T]): List[T] = {
-    val builder = List.newBuilder[T]
-    val it = collection.iterator()
-    while (it.hasNext) builder += it.next()
-    builder.result()
-  }
 }

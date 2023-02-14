@@ -66,33 +66,32 @@ class HoconSpec extends CatsEffectSuite {
     nested("per").as[java.time.Period].load[IO] assertEquals java.time.Period.ofWeeks(2)
   }
   test("parse List[Int]") {
-    nested.list("listInt").as[List[Int]].load[IO] assertEquals List(1, 2, 3, 4)
+    nested("listInt").as[List[Int]].load[IO] assertEquals List(1, 2, 3, 4)
   }
   test("parse List[Long]") {
-    nested.list("listInt").as[List[Long]].load[IO] assertEquals List(1L, 2, 3, 4)
+    nested("listInt").as[List[Long]].load[IO] assertEquals List(1L, 2, 3, 4)
   }
   test("parse List[String]") {
-    nested.list("listString").as[List[String]].load[IO] assertEquals List("a", "b", "c", "d")
+    nested("listString").as[List[String]].load[IO] assertEquals List("a", "b", "c", "d")
   }
   test("parse List[Bool]") {
-    nested.list("listBool").as[List[Boolean]].load[IO] assertEquals List(true, false, true)
+    nested("listBool").as[List[Boolean]].load[IO] assertEquals List(true, false, true)
   }
   test("parse List[Double]") {
-    nested.list("listDouble").as[List[Double]].load[IO] assertEquals List(1.12, 2.34, 2.33)
+    nested("listDouble").as[List[Double]].load[IO] assertEquals List(1.12, 2.34, 2.33)
   }
   test("parse List[java Duration]") {
-    nested.list("listDur").as[List[java.time.Duration]].load[IO] assertEquals List(
+    nested("listDur").as[List[java.time.Duration]].load[IO] assertEquals List(
       java.time.Duration.ofMillis(10),
       java.time.Duration.ofMillis(15),
       java.time.Duration.ofSeconds(1)
     )
   }
   test("parse List[scala Duration]") {
-    nested.list("listDur").as[List[FiniteDuration]].load[IO] assertEquals List(10.millis, 15.millis, 1.second)
+    nested("listDur").as[List[FiniteDuration]].load[IO] assertEquals List(10.millis, 15.millis, 1.second)
   }
   test("handle decode error for invalid list") {
-    nested
-      .list("invalidList")
+    nested("invalidList")
       .as[List[Int]]
       .attempt[IO]
       .map {
@@ -100,7 +99,7 @@ class HoconSpec extends CatsEffectSuite {
         case Right(_)    => "config loaded"
       }
       .assertEquals(
-        "Nested.config.invalidList with value SimpleConfigList([1,\"a\",true]) cannot be converted to List[Int]"
+        "Nested.config.invalidList with value a cannot be converted to Int"
       )
   }
   test("handle missing") {

@@ -63,7 +63,7 @@ val hocon = hoconAt(config)("rate")
   hocon("elements").as[Int],
   hocon("burst-duration").as[FiniteDuration],
   hocon("check-interval").as[Period],
-  hocon.list("values").as[List[String]]
+  hocon("values").as[List[String]]
 ).parMapN(Rate.apply).load[IO].map { rate =>
   assertEquals(rate.burstDuration, 100.millis)
   assertEquals(rate.checkInterval, Period.ofWeeks(2))
