@@ -47,16 +47,23 @@ val config = ConfigFactory.parseString("""
     |  elements = 2
     |  burst-duration = 100 millis
     |  check-interval = 2 weeks
+    |  values = [ first, second ]
     |}
   """.stripMargin)
 
-case class Rate(elements: Int, burstDuration: FiniteDuration, checkInterval: Period)
+case class Rate(
+  elements: Int,
+  burstDuration: FiniteDuration,
+  checkInterval: Period,
+  values: List[String]
+)
 
 val hocon = hoconAt(config)("rate")
 (
   hocon("elements").as[Int],
   hocon("burst-duration").as[FiniteDuration],
-  hocon("check-interval").as[Period]
+  hocon("check-interval").as[Period],
+  hocon("values").as[List[String]]
 ).parMapN(Rate.apply).load[IO].map { rate =>
   assertEquals(rate.burstDuration, 100.millis)
   assertEquals(rate.checkInterval, Period.ofWeeks(2))

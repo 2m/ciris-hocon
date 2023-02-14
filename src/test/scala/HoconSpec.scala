@@ -31,6 +31,12 @@ class HoconSpec extends CatsEffectSuite {
       |    dur = 10 ms
       |    bool = true
       |    per = 2 weeks
+      |    listInt = [ 1, 2, 3, 4 ]
+      |    listString = [ a, b, c, d ]
+      |    listBool = [ true, false, true ]
+      |    listDouble = [ 1.12, 2.34, 2.33 ]
+      |    listDur = [ 10 ms, 15 ms, 1 s ]
+      |    invalidList = [ 1, a, true ]
       |  }
       |}
       |subst {
@@ -58,6 +64,43 @@ class HoconSpec extends CatsEffectSuite {
   }
   test("parse Period") {
     nested("per").as[java.time.Period].load[IO] assertEquals java.time.Period.ofWeeks(2)
+  }
+  test("parse List[Int]") {
+    nested("listInt").as[List[Int]].load[IO] assertEquals List(1, 2, 3, 4)
+  }
+  test("parse List[Long]") {
+    nested("listInt").as[List[Long]].load[IO] assertEquals List(1L, 2, 3, 4)
+  }
+  test("parse List[String]") {
+    nested("listString").as[List[String]].load[IO] assertEquals List("a", "b", "c", "d")
+  }
+  test("parse List[Bool]") {
+    nested("listBool").as[List[Boolean]].load[IO] assertEquals List(true, false, true)
+  }
+  test("parse List[Double]") {
+    nested("listDouble").as[List[Double]].load[IO] assertEquals List(1.12, 2.34, 2.33)
+  }
+  test("parse List[java Duration]") {
+    nested("listDur").as[List[java.time.Duration]].load[IO] assertEquals List(
+      java.time.Duration.ofMillis(10),
+      java.time.Duration.ofMillis(15),
+      java.time.Duration.ofSeconds(1)
+    )
+  }
+  test("parse List[scala Duration]") {
+    nested("listDur").as[List[FiniteDuration]].load[IO] assertEquals List(10.millis, 15.millis, 1.second)
+  }
+  test("handle decode error for invalid list") {
+    nested("invalidList")
+      .as[List[Int]]
+      .attempt[IO]
+      .map {
+        case Left(error) => error.messages.toList.head
+        case Right(_)    => "config loaded"
+      }
+      .assertEquals(
+        "Nested.config.invalidList with value a cannot be converted to Int"
+      )
   }
   test("handle missing") {
     nested("missing")

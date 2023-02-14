@@ -16,6 +16,7 @@
 
 package lt.dvim.ciris
 
+import scala.jdk.CollectionConverters._
 import scala.util.Try
 
 import ciris._
@@ -47,6 +48,18 @@ object Hocon extends HoconConfigDecoders {
 trait HoconConfigDecoders {
   implicit val stringHoconDecoder: ConfigDecoder[HoconConfigValue, String] =
     ConfigDecoder[HoconConfigValue].map(_.atKey("t").getString("t"))
+
+  implicit def listHoconDecoder[T](implicit
+      decoder: ConfigDecoder[HoconConfigValue, T]
+  ): ConfigDecoder[HoconConfigValue, List[T]] =
+    ConfigDecoder[HoconConfigValue]
+      .map(_.atKey("t").getList("t").asScala.toList)
+      .mapEither { (key, list) =>
+        list.map(decoder.decode(key, _)).partitionMap(identity) match {
+          case (Nil, rights)       => Right(rights)
+          case (firstLeft :: _, _) => Left(firstLeft)
+        }
+      }
 
   implicit val javaTimeDurationHoconDecoder: ConfigDecoder[HoconConfigValue, java.time.Duration] =
     ConfigDecoder[HoconConfigValue].map(_.atKey("t").getDuration("t"))
