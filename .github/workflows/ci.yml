@@ -14,16 +14,17 @@ jobs:
     strategy:
       fail-fast: false
     steps:
-    - uses: actions/checkout@v3
-    - uses: coursier/cache-action@v6
-    - uses: laughedelic/coursier-setup@v1
+    - uses: actions/checkout@v4
+    - uses: actions/setup-java@v4
       with:
-        jvm: adopt:14
-        apps: sbtn
-    - run: sbtn scalafixAll --check
-    - run: sbtn scalafmtCheckAll
-    - run: sbtn scalafmtSbtCheck
-    - run: sbtn headerCheckAll
+        distribution: temurin
+        java-version: 17
+        cache: sbt
+
+    - run: sbt --client scalafixAll --check
+    - run: sbt --client scalafmtCheckAll
+    - run: sbt --client scalafmtSbtCheck
+    - run: sbt --client headerCheckAll
     - name: yaml-lint
       uses: ibiqlik/action-yamllint@v3
 
@@ -33,11 +34,12 @@ jobs:
     strategy:
       fail-fast: false
     steps:
-    - uses: actions/checkout@v3
-    - uses: coursier/cache-action@v6
-    - uses: laughedelic/coursier-setup@v1
+    - uses: actions/checkout@v4
+    - uses: actions/setup-java@v4
       with:
-        jvm: adopt:14
-        apps: sbtn
-    - run: sbtn +compile
-    - run: sbtn +test
+        distribution: temurin
+        java-version: 17
+        cache: sbt
+
+    - run: sbt --client +compile
+    - run: sbt --client +test
