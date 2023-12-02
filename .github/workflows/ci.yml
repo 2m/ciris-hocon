@@ -21,7 +21,6 @@ jobs:
         java-version: 17
         cache: sbt
 
-    - run: sbt --client scalafixAll --check
     - run: sbt --client scalafmtCheckAll
     - run: sbt --client scalafmtSbtCheck
     - run: sbt --client headerCheckAll

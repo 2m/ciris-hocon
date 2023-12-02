@@ -2,8 +2,8 @@ organization := "lt.dvim.ciris-hocon"
 name := "ciris-hocon"
 description := "Provides HOCON configuration source for Ciris"
 
-scalaVersion := "2.13.10"
-crossScalaVersions += "3.2.2"
+scalaVersion := "2.13.12"
+crossScalaVersions += "3.3.1"
 
 libraryDependencies ++= Seq(
   "is.cir"        %% "ciris"               % "3.1.0",
@@ -13,11 +13,6 @@ libraryDependencies ++= Seq(
 )
 
 scalafmtOnCompile := true
-scalafixOnCompile := true
-
-ThisBuild / scalafixDependencies ++= Seq(
-  "com.nequissimus" %% "sort-imports" % "0.5.5"
-)
 
 // show full stack traces and test case durations
 Test / testOptions += Tests.Argument("-oDF")
