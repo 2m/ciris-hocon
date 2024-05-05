@@ -2,7 +2,7 @@ organization := "lt.dvim.ciris-hocon"
 name := "ciris-hocon"
 description := "Provides HOCON configuration source for Ciris"
 
-scalaVersion := "2.13.13"
+scalaVersion := "2.13.14"
 crossScalaVersions += "3.3.3"
 
 libraryDependencies ++= Seq(
