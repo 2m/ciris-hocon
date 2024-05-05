@@ -11,3 +11,8 @@ categories:
   collapse-after: 3
   labels:
   - dependencies
+
+autolabeler:
+- label: 'dependencies'
+  branch:
+  - '/update\/.+/'
