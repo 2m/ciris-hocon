@@ -18,8 +18,9 @@ jobs:
     - uses: actions/setup-java@v4
       with:
         distribution: temurin
-        java-version: 17
+        java-version: 21
         cache: sbt
+    - uses: sbt/setup-sbt@v1
 
     - run: sbt --client scalafmtCheckAll
     - run: sbt --client scalafmtSbtCheck
@@ -37,8 +38,9 @@ jobs:
     - uses: actions/setup-java@v4
       with:
         distribution: temurin
-        java-version: 17
+        java-version: 21
         cache: sbt
+    - uses: sbt/setup-sbt@v1
 
     - run: sbt --client +compile
     - run: sbt --client +test
