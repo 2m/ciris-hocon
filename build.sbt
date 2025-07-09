@@ -9,7 +9,7 @@ libraryDependencies ++= Seq(
   "is.cir"        %% "ciris"             % "3.9.0",
   "com.typesafe"   % "config"            % "1.4.3",
   "org.typelevel" %% "munit-cats-effect" % "2.1.0" % "test",
-  "org.typelevel" %% "cats-effect"       % "3.6.1" % "test"
+  "org.typelevel" %% "cats-effect"       % "3.6.2" % "test"
 )
 
 scalafmtOnCompile := true
