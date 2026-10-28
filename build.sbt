@@ -3,7 +3,7 @@ name := "ciris-hocon"
 description := "Provides HOCON configuration source for Ciris"
 
 scalaVersion := "3.9.0"
-crossScalaVersions += "3.3.8"
+crossScalaVersions += "3.3.9"
 
 libraryDependencies ++= Seq(
   "is.cir"        %% "ciris"             % "3.15.2",
